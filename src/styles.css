@@ -33,6 +33,7 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -43,8 +44,16 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  /* Soft-yellow panel behind an active trip — see DESIGN_SPEC_PILOT_APP 5.8. */
+  --color-trip-panel: var(--trip-panel);
+  /* Tinted backgrounds for inline banners; the strong colour is the border/icon. */
+  --color-danger-tint: var(--danger-tint);
+  --color-success-tint: var(--success-tint);
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --color-border: var(--border);
   --color-input: var(--input);
@@ -66,80 +75,107 @@
 }
 
 :root {
+  /*
+   * The palette from spark-bond-link.lovable.app, adopted at the founder's
+   * request. **Their colours, exactly** — including the gold.
+   *
+   * The first attempt darkened the gold to make it readable and the founder
+   * rightly said it no longer matched. It does not have to: a colour only
+   * needs contrast against the thing drawn *on* it, and the choice of what to
+   * draw was ours, not theirs.
+   *
+   * So the gold stays #d1a33b and the writing on it turned dark. White on
+   * that gold is 2.33:1, which fails; near-black on it is **8.04:1**, which
+   * passes comfortably — and gold with dark type is the more expensive-looking
+   * of the two anyway.
+   *
+   * The one place a darker gold is still needed is gold used *as text* on a
+   * white page, where nothing can be drawn on top to fix it. That is
+   * `--primary-strong`, same hue and saturation, and it is wired to the
+   * `text-primary` utility at the bottom of this file so `bg-primary` keeps
+   * the real colour.
+   */
   --radius: 0.75rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.18 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0 0);
-  /* BWM Gold #C9A227 */
-  --primary: oklch(0.74 0.13 84);
-  --primary-foreground: oklch(1 0 0);
-  --primary-pressed: oklch(0.68 0.13 82);
-  --secondary: oklch(0.96 0 0);
-  --secondary-foreground: oklch(0.18 0 0);
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.5 0 0);
-  --accent: oklch(0.96 0.04 84);
-  --accent-foreground: oklch(0.18 0 0);
-  --destructive: oklch(0.62 0.22 25);
-  --destructive-foreground: oklch(1 0 0);
-  --success: oklch(0.7 0.17 150);
-  --warning: oklch(0.78 0.15 70);
-  --surface: oklch(0.97 0 0);
-  --border: oklch(0.9 0 0);
-  --input: oklch(0.9 0 0);
-  --ring: oklch(0.74 0.13 84);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
+
+  /* Theirs, unchanged. */
+  --background: #ffffff;
+  --foreground: #121212;
+  --card: #ffffff;
+  --card-foreground: #121212;
+  --popover: #ffffff;
+  --popover-foreground: #121212;
+  --secondary: #f2f2f2;
+  --secondary-foreground: #121212;
+  --muted: #f2f2f2;
+  --muted-foreground: #636363;
+  --accent: #fff0d4;
+  --accent-foreground: #121212;
+  --surface: #f5f5f5;
+  --border: #dedede;
+  --input: #dedede;
+
+  /* Their gold, exactly. */
+  --primary: #d1a33b;
+  /* Dark rather than their white: 8.04:1 instead of 2.33:1. */
+  --primary-foreground: #121212;
+  --primary-pressed: #c08f22;
+  /* The same gold, dark enough to be read as text on a white page. */
+  --primary-strong: #8e6300;
+
+  /* Their gradient ends, from the site's hero. */
+  --brand-gradient-from: #c9a227;
+  --brand-gradient-to: #e0b83a;
+
+  /*
+   * Status colours: theirs, darkened only as far as reading them requires.
+   * Unlike the gold these are used as text far more than as a fill — a green
+   * tick, an amber warning line, a red error — so there is nothing drawn on
+   * top to fix instead.
+   */
+  --success: oklch(0.5024 0.1705 149.98);
+  --success-foreground: #ffffff;
+  --warning: oklch(0.5345 0.1505 69.75);
+  --warning-foreground: #ffffff;
+  --destructive: oklch(0.5537 0.2203 24.89);
+  --destructive-foreground: #ffffff;
+
+  /* The focus ring has to be seen against what it sits on (WCAG 1.4.11). */
+  --ring: #8e6300;
+
+  /* Ours: surfaces their scheme does not define. Tuned to their greys. */
+  --surface-alt: #f2f2f2;
+  --trip-panel: #faf6e9;
+  --danger-tint: #fbe7e9;
+  --success-tint: #eaf6ee;
+
+  /* Theirs, unchanged. */
+  --chart-1: #f05100;
+  --chart-2: #009588;
+  --chart-3: #104e64;
+  --chart-4: #fcbb00;
+  --chart-5: #f99c00;
+  --sidebar: #f8fafc;
+  --sidebar-foreground: #020618;
+  --sidebar-primary: #0f172b;
+  --sidebar-primary-foreground: #f8fafc;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172b;
+  --sidebar-border: #e2e8f0;
   --sidebar-ring: oklch(0.704 0.04 256.788);
 }
 
-.dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
-}
+/*
+ * No dark theme.
+ *
+ * The block that used to sit here was the shadcn slate default — a blue-grey
+ * palette with a near-white primary, unrelated to the LoadReady brand. Nothing
+ * toggled it, so it never rendered, but anything that set .dark would have got
+ * a theme nobody designed.
+ *
+ * The design has no dark mode. When one is drawn, add it deliberately here.
+ * The dark variant itself is kept registered above so existing dark: utilities
+ * still compile.
+ */
 
 @layer base {
   * {
@@ -159,6 +195,34 @@
   }
 }
 
+@layer base {
+  /*
+   * A visible focus ring for keyboard users, and only for them — WCAG 2.4.7.
+   * Nothing in the app defined one, so tabbing through was invisible.
+   */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  /*
+   * Respect "reduce motion". Pilots use this on the road, and the app animates
+   * banners, sheets and spinners; a user who has asked the OS to stop motion
+   * must not get it back here (WCAG 2.3.3).
+   */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
 @layer utilities {
   .admin-mobile-scroll {
     scrollbar-width: none;
@@ -171,19 +235,19 @@
 }
 
 /* Vehicle marker (Mapbox custom element) */
-.bwm-vehicle {
+.loadready-vehicle {
   width: 40px;
   height: 40px;
   position: relative;
 }
-.bwm-vehicle-shadow {
+.loadready-vehicle-shadow {
   position: absolute;
   inset: 4px;
   border-radius: 9999px;
   background: rgba(15, 23, 42, 0.25);
   filter: blur(6px);
 }
-.bwm-vehicle-rot {
+.loadready-vehicle-rot {
   position: absolute;
   inset: 0;
   transform-origin: 50% 50%;
@@ -194,4 +258,50 @@
 .mapboxgl-ctrl-bottom-left,
 .mapboxgl-ctrl-bottom-right {
   display: none !important;
+}
+
+/*
+ * Printing.
+ *
+ * The job sheet is meant to end up on paper in a cab, where a roadside check
+ * happens with no signal and a flat phone. When it is open, everything else on
+ * the page is hidden so the sheet prints on its own — the app chrome, the
+ * bottom bar and the dimmed backdrop are not part of the document.
+ */
+@media print {
+  /*
+   * Visibility rather than display: the sheet is nested deep inside the app's
+   * root element, so hiding every non-ancestor outright would hide the sheet
+   * with them. Hiding everything and un-hiding the sheet's own subtree is the
+   * one form of this that works wherever it is mounted.
+   */
+  body[data-printing="job-sheet"] * {
+    visibility: hidden;
+  }
+  body[data-printing="job-sheet"] [data-print-root],
+  body[data-printing="job-sheet"] [data-print-root] * {
+    visibility: visible;
+  }
+  body[data-printing="job-sheet"] [data-print-root] {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    background: #fff;
+    color: #000;
+  }
+}
+
+/*
+ * Gold as text, and only as text.
+ *
+ * `bg-primary` and `text-primary` read one token, so a gold light enough to
+ * look like the brand is too light to read as writing. Rather than darken the
+ * brand — which is what made it stop matching — the fill keeps #d1a33b and
+ * this one rule gives the text-and-icon case a darker gold of the same hue.
+ *
+ * Placed after Tailwind's utilities so it wins, and scoped to colour alone so
+ * nothing else about the utility changes.
+ */
+.text-primary {
+  color: var(--primary-strong);
 }

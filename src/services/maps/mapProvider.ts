@@ -30,13 +30,19 @@ export interface MapProvider {
 
 const MOCK_ROUTE_DENSITY = 24;
 
-function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
+function lerp(a: number, b: number, t: number) {
+  return a + (b - a) * t;
+}
 
 export const mockMapProvider: MapProvider = {
   name: "mock",
   mode: "demo",
-  async geocode() { return null; },
-  async reverseGeocode() { return null; },
+  async geocode() {
+    return null;
+  },
+  async reverseGeocode() {
+    return null;
+  },
   async getRoute(pickup, dropoff) {
     const geometry: [number, number][] = [];
     for (let i = 0; i <= MOCK_ROUTE_DENSITY; i++) {
