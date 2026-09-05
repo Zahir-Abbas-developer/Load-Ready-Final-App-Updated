@@ -75,20 +75,36 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "LoadReady" },
+      {
+        name: "description",
+        content:
+          "Escort and pilot-car jobs for oversize/overweight loads across the USA and Canada.",
+      },
+      { name: "author", content: "LoadReady" },
+      { property: "og:title", content: "LoadReady" },
+      {
+        property: "og:description",
+        content:
+          "Escort and pilot-car jobs for oversize/overweight loads across the USA and Canada.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      /*
+       * The colour the phone paints around the app when it is installed.
+       * Without it Android draws the status bar white over a dark header.
+       */
+      { name: "theme-color", content: "#0F172A" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "apple-mobile-web-app-title", content: "LoadReady" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      // iOS ignores the manifest's icons entirely and uses this one.
+      { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },
+      { rel: "icon", type: "image/png", sizes: "32x32", href: "/icons/favicon-32.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -114,8 +130,15 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
-  // Register service worker for PWA offline tile cache.
-  // Skip in iframes / Lovable preview hosts to avoid stale-shell issues.
+  /*
+   * The service worker, so a pilot with no signal gets the app rather than the
+   * browser's error page.
+   *
+   * Still skipped inside an iframe: a worker registered from an embedded copy
+   * claims the outer page too, and the old registration outlives whatever put
+   * it there. The named preview hosts it used to check for belonged to the
+   * template's hosting, which this app left in Phase B.
+   */
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!("serviceWorker" in navigator)) return;
@@ -127,17 +150,12 @@ function RootComponent() {
         return true;
       }
     })();
-    const isPreview =
-      window.location.hostname.includes("id-preview--") ||
-      window.location.hostname.includes("lovableproject.com") ||
-      window.location.hostname.includes("lovable.app") &&
-        window.location.hostname.includes("--");
 
-    if (inIframe || isPreview) {
-      // Cleanup any previously-registered SW in preview/iframe contexts.
-      navigator.serviceWorker.getRegistrations().then((rs) => {
-        rs.forEach((r) => r.unregister());
-      });
+    if (inIframe) {
+      void navigator.serviceWorker
+        .getRegistrations()
+        .then((registrations) => registrations.forEach((r) => void r.unregister()))
+        .catch(() => undefined);
       return;
     }
 

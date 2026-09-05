@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 
 export type Role = "pilot" | "dispatcher" | "admin" | null;
 
@@ -7,9 +7,14 @@ export type OnboardingStep =
   | "slide1"
   | "slide2"
   | "slide3"
-  | "role"
-  | "signup"
-  | "otp"
+  | "login"
+  | "create-account"
+  | "forgot-password"
+  | "reset-password"
+  | "verify-otp"
+  | "signup-done"
+  | "mfa-challenge"
+  | "mfa-enrol"
   | "pilot-step1"
   | "pilot-step2"
   | "pilot-step3"
@@ -34,67 +39,23 @@ interface OnboardingState {
   setContact: (c: string) => void;
   states: string[];
   setStates: (s: string[]) => void;
-  demo: boolean;
-  setDemo: (d: boolean) => void;
 }
 
 const Ctx = createContext<OnboardingState | null>(null);
 
-const LS_KEY = "bwm:demo-session:v1";
-
-type Persisted = {
-  demo: boolean;
-  role: Role;
-  contact: string;
-  step: OnboardingStep;
-};
-
-function readPersisted(): Persisted | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(LS_KEY);
-    return raw ? (JSON.parse(raw) as Persisted) : null;
-  } catch {
-    return null;
-  }
-}
-
-export function clearDemoSession() {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.removeItem(LS_KEY);
-    // also clear any seeded demo content keys
-    Object.keys(window.localStorage)
-      .filter((k) => k.startsWith("bwm:demo:"))
-      .forEach((k) => window.localStorage.removeItem(k));
-  } catch {
-    /* ignore */
-  }
-}
-
+/**
+ * In-app navigation for the onboarding / registration funnel.
+ *
+ * This holds screen position only — it is not an auth boundary. Who you are
+ * and what you may see comes from `useAuth()` (Supabase session + the role in
+ * public.user_roles), and is enforced again by row level security.
+ */
 export function OnboardingProvider({ children }: { children: ReactNode }) {
-  const initial = readPersisted();
-  const [step, setStep] = useState<OnboardingStep>(initial?.step ?? "splash");
-  const [history, setHistory] = useState<OnboardingStep[]>([]);
-  const [role, setRole] = useState<Role>(initial?.role ?? null);
-  const [contact, setContact] = useState(initial?.contact ?? "");
+  const [step, setStep] = useState<OnboardingStep>("splash");
+  const [, setHistory] = useState<OnboardingStep[]>([]);
+  const [role, setRole] = useState<Role>(null);
+  const [contact, setContact] = useState("");
   const [states, setStates] = useState<string[]>([]);
-  const [demo, setDemo] = useState(initial?.demo ?? false);
-
-  // Persist demo session to localStorage so refresh keeps you in demo.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      if (demo) {
-        const data: Persisted = { demo, role, contact, step };
-        window.localStorage.setItem(LS_KEY, JSON.stringify(data));
-      } else {
-        window.localStorage.removeItem(LS_KEY);
-      }
-    } catch {
-      /* ignore */
-    }
-  }, [demo, role, contact, step]);
 
   const go = (s: OnboardingStep) => {
     setHistory((h) => [...h, step]);
@@ -110,7 +71,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Ctx.Provider value={{ step, go, back, role, setRole, contact, setContact, states, setStates, demo, setDemo }}>
+    <Ctx.Provider value={{ step, go, back, role, setRole, contact, setContact, states, setStates }}>
       {children}
     </Ctx.Provider>
   );
