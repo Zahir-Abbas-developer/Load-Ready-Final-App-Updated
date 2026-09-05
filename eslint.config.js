@@ -6,7 +6,26 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", ".output", ".vinxi"] },
+  {
+    ignores: [
+      "dist",
+      ".output",
+      ".vinxi",
+      ".data",
+      ".tools",
+      ".wrangler",
+      "test-results",
+      "playwright-report",
+      "coverage",
+      "scripts",
+      // Capacitor generates these. They are Java, Swift, Gradle and Xcode
+      // project files with a handful of vendored scripts among them, and none
+      // of it is ours to lint.
+      "android",
+      "ios",
+      "src/routeTree.gen.ts",
+    ],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],

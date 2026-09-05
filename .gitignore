@@ -30,3 +30,27 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables (contains Supabase keys — never commit)
+.env
+.env.local
+.env.*.local
+
+# Local tooling (cloudflared binary for sharing dev server)
+.tools/
+
+# Local account store (password hashes — never commit)
+.data/
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Vitest coverage
+coverage/
+
+# Backups. As sensitive as the live store — password hashes, private
+# messages, recorded positions. Never in the repository.
+backups/

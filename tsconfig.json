@@ -1,5 +1,24 @@
 {
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "eslint.config.js"],
+  /*
+   * Everything written in TypeScript, not only what ships.
+   *
+   * Tests were excluded until Phase L, so a test could call a function with
+   * the wrong shape, pass a value the types forbid, or assert on a field that
+   * no longer exists, and only fail at runtime — which is how two assertions
+   * survived the SMS channel being deleted (F-107). A test that is not
+   * typechecked is a test that can quietly stop testing.
+   */
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "e2e/**/*.ts",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "capacitor.config.ts",
+    "eslint.config.js"
+  ],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",
@@ -16,8 +35,8 @@
     /* Linting */
     "skipLibCheck": true,
     "strict": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "paths": {

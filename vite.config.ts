@@ -12,4 +12,15 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
+  vite: {
+    // Vite rejects unknown Host headers, so both the dev server and the preview
+    // server have to opt in to the temporary Cloudflare quick-tunnel hostname
+    // used for sharing the app with teammates.
+    server: {
+      allowedHosts: [".trycloudflare.com"],
+    },
+    preview: {
+      allowedHosts: [".trycloudflare.com"],
+    },
+  },
 });
